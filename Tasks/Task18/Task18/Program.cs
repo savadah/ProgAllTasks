@@ -4,17 +4,26 @@ using System.Collections.Generic;
 class Program
 {
        static void Main()
-    {
+       {
         var map = new MyTreeMap<int, string>();
-        Console.WriteLine("Пусто? " + map.IsEmpty());
-        Console.WriteLine("Размер: " + map.Size());
 
-        Console.WriteLine("Есть ли ключ 10? " + map.ContainsKey(10));
-        Console.WriteLine("get(10): " + (map.Get(10) ?? "null"));
+        Console.WriteLine("Пусто? " + map.IsEmpty());
+        map.Put(10, "ten");
+        map.Put(5, "five");
+        map.Put(15, "fifteen");
+
+        Console.WriteLine("Размер: " + map.Size());
+        Console.WriteLine("Get(10): " + (map.Get(10) ?? "null"));
+        Console.WriteLine("Get(5): " + (map.Get(5) ?? "null"));
+        Console.WriteLine("Есть ли ключ 15? " + map.ContainsKey(15));
+
+        map.Put(10, "TEN");
+        Console.WriteLine("Get(10) после замены: " + (map.Get(10) ?? "null"));
+        Console.WriteLine("Размер после замены: " + map.Size());
 
         map.Clear();
         Console.WriteLine("После clear size: " + map.Size());
-    }
+       }
 
     public class MyTreeMap<K, V>
     {
@@ -120,6 +129,49 @@ class Program
             Node node = FindNode(key);
             if (node == null) return default(V);
             return node.Value;
+        }
+
+        public void Put(K key, V value)
+        {
+            if (object.Equals(key, null)) throw new ArgumentNullException("key");
+
+            if(root == null)
+            {
+                root = new Node(key, value);
+                size = 1;
+                return;
+            }
+            Node current = root;
+
+            while(true)
+            {
+                int cmp = CompareKeys(key, current.Key);
+                if(cmp == 0)
+                {
+                    current.Value = value;
+                    return;
+                }
+                else if(cmp < 0)
+                {
+                    if(current.Left == null)
+                    {
+                        current.Left = new Node(key, value);
+                        size++;
+                        return;
+                    }
+                    current = current.Left;
+                }
+                else
+                {
+                    if(current.Right == null)
+                    {
+                        current.Right = new Node(key, value);
+                        size++;
+                        return;
+                    }
+                    current = current.Right;
+                }
+            }
         }
     }
 }
