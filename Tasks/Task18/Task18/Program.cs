@@ -21,6 +21,13 @@ class Program
         Console.WriteLine("Get(10) после замены: " + (map.Get(10) ?? "null"));
         Console.WriteLine("Размер после замены: " + map.Size());
 
+        map.Put(12, "twelve");
+        map.Put(18, "eighteen");
+        Console.WriteLine("Удаляем 15: " + (map.Remove(15) ?? "null"));
+        Console.WriteLine("Удаляем 5: " + (map.Remove(5) ?? "null"));
+        Console.WriteLine("Есть ли ключ 5? " + map.ContainsKey(5));
+        Console.WriteLine("Размер после удаления: " + map.Size());
+
         map.Clear();
         Console.WriteLine("После clear size: " + map.Size());
        }
@@ -33,17 +40,19 @@ class Program
 
         private class Node
         {
+            public Node Parent;
             public K Key;
             public V Value;
             public Node Left;
             public Node Right;
 
-            public Node(K key, V value)
+            public Node(K key, V value, Node parent)
             {
                 Key = key;
                 Value = value;
                 Left = null;
                 Right = null;
+                Parent = parent;
             }
         }
 
@@ -137,7 +146,7 @@ class Program
 
             if(root == null)
             {
-                root = new Node(key, value);
+                root = new Node(key, value, null);
                 size = 1;
                 return;
             }
@@ -155,7 +164,7 @@ class Program
                 {
                     if(current.Left == null)
                     {
-                        current.Left = new Node(key, value);
+                        current.Left = new Node(key, value, current);
                         size++;
                         return;
                     }
@@ -165,13 +174,76 @@ class Program
                 {
                     if(current.Right == null)
                     {
-                        current.Right = new Node(key, value);
+                        current.Right = new Node(key, value, current);
                         size++;
                         return;
                     }
                     current = current.Right;
                 }
             }
+        }
+
+        private void Transplant(Node u, Node v)
+        {
+            if (u.Parent == null)
+            {
+                root = v;
+            }
+            else if (u == u.Parent.Left)
+            {
+                u.Parent.Left = v;
+            }
+            else u.Parent.Right = v;
+            if(v != null)
+            {
+                v.Parent = u.Parent;
+            }
+        }
+
+        private Node MinNode(Node node)
+        {
+            Node current = node;
+            while(current.Left != null)
+            {
+                current = current.Left;
+            }
+            return current;
+        }
+
+        public V Remove(K key)
+        {
+            Node z = FindNode(key);
+            if(z == null)
+            {
+                return default(V);
+            }
+
+            V removedValue = z.Value;
+
+            if(z.Left == null)
+            {
+                Transplant(z, z.Right);
+            }
+            else if (z.Right == null)
+            {
+                Transplant(z, z.Left);
+            }
+            else
+            {
+                Node y = MinNode(z.Right);
+
+                if(y.Parent != z)
+                {
+                    Transplant(y, y.Right);
+                    y.Right = z.Right;
+                    if (y.Right != null) y.Right.Parent = y;
+                }
+                Transplant(z, y);
+                y.Left = z.Left;
+                if (y.Left != null) y.Left.Parent = y;
+            }
+            size--;
+            return removedValue;
         }
     }
 }
