@@ -68,6 +68,7 @@ class Program
         private Node root;
         private int size;
 
+        // (Node) Внутренний узел дерева: хранит ключ/значение и ссылки на детей + родителя
         private class Node
         {
             public Node Parent;
@@ -86,6 +87,7 @@ class Program
             }
         }
 
+        // (Entry) Пара "ключ-значение" для возврата 
         public class Entry
         {
             public K Key;
@@ -102,14 +104,14 @@ class Program
                 return Key + "=" + Value;
             }
         }
-
+        // 1
         public MyTreeMap()
         {
             comparator = null;
             root = null;
             size = 0;
         }
-
+        // 2
         public MyTreeMap(IComparer<K> comp)
         {
             if (comp == null) throw new ArgumentNullException("comp");
@@ -118,6 +120,7 @@ class Program
             size = 0;
         }
 
+        // (CompareKeys) Универсальное сравнение ключей через comparator (если есть) или через IComparable<K>
         private int CompareKeys(K a, K b)
         {
             if (object.Equals(a, null)) throw new ArgumentNullException("a");
@@ -136,6 +139,7 @@ class Program
             else throw new InvalidOperationException("Тип ключа " + typeof(K).Name + " не поддерживает сравнение");
         }
 
+        // (FindNode) Поиск узла по ключу в BST (идём влево/вправо по сравнению ключей)
         private Node FindNode(K key)
         {
             if (object.Equals(key, null)) throw new ArgumentNullException("key");
@@ -158,35 +162,35 @@ class Program
             }
             return null;
         }
-
+        // 12
         public int Size()
         {
             return size;
         }
-
+        // 8
         public bool IsEmpty()
         {
             return size == 0;
         }
-
+        // 3
         public void Clear()
         {
             root = null;
             size = 0;
         }
-
+        // 4
         public bool ContainsKey(K key)
         {
             return FindNode(key) != null;
         }
-
+        // 7
         public V Get(K key)
         {
             Node node = FindNode(key);
             if (node == null) return default(V);
             return node.Value;
         }
-
+        // 10
         public void Put(K key, V value)
         {
             if (object.Equals(key, null)) throw new ArgumentNullException("key");
@@ -230,6 +234,7 @@ class Program
             }
         }
 
+        // (Transplant) Замена одного поддерева другим: ставит v на место u (нужно для удаления)
         private void Transplant(Node u, Node v)
         {
             if (u.Parent == null)
@@ -247,6 +252,7 @@ class Program
             }
         }
 
+        // (MinNode) Минимальный узел в поддереве (самый левый) — нужен для first/pollFirst и Remove
         private Node MinNode(Node node)
         {
             Node current = node;
@@ -256,7 +262,7 @@ class Program
             }
             return current;
         }
-
+        // 11
         public V Remove(K key)
         {
             Node z = FindNode(key);
@@ -292,6 +298,7 @@ class Program
             size--;
             return removedValue;
         }
+        // (MaxNode) Максимальный узел в поддереве (самый правый) — нужен для last/pollLast
         private Node MaxNode(Node node)
         {
             Node current = node;
@@ -301,33 +308,33 @@ class Program
             }
             return current;
         }
-
+        // 13
         public K FirstKey()
         {
             if (root == null) throw new InvalidOperationException("Пусто");
             return MinNode(root).Key;
         }
-
+        // 14
         public K LastKey()
         {
             if (root == null) throw new InvalidOperationException("Пусто");
             return MaxNode(root).Key;
         }
-
+        // 28
         public Entry FirstEntry()
         {
             if(root == null) throw new InvalidOperationException("Пусто");
             Node n = MinNode(root);
             return new Entry(n.Key, n.Value);
         }
-
+        // 29
         public Entry LastEntry()
         {
             if (root == null) throw new InvalidOperationException("Пусто");
             Node n = MaxNode(root);
             return new Entry(n.Key, n.Value);
         }
-
+        // 26
         public Entry PollFirstEntry()
         {
             if(root == null) throw new InvalidOperationException("Пусто");
@@ -336,7 +343,7 @@ class Program
             Remove(n.Key);
             return e;
         }
-
+        // 27
         public Entry PollLastEntry()
         {
             if (root == null) throw new InvalidOperationException("Пусто");
@@ -347,6 +354,7 @@ class Program
             return e;
         }
 
+        // (TraverseInOrder) Обход дерева (по возрастанию ключей) и сбор узлов в список
         private void TraverseInOrder(Node node, List<Node> list)
         {
             if (node == null) return;
@@ -355,13 +363,14 @@ class Program
             TraverseInOrder(node.Right, list);
         }
 
+        // (GetAllNodesInOrder) Возвращает все узлы дерева в отсортированном порядке (используется в set/range/near методах)
         private List<Node> GetAllNodesInOrder()
         {
             List<Node> list = new List<Node>();
             TraverseInOrder(root, list);
             return list;
         }
-
+        // 18
         public Entry LowerEntry(K key)
         {
             if (root == null) throw new InvalidOperationException("Пусто");
@@ -381,12 +390,12 @@ class Program
             if (best == null) throw new InvalidOperationException("Нет меньшего ключа");
             return new Entry(best.Key, best.Value);
         }
-
+        // 22
         public K LowerKey(K key)
         {
             return LowerEntry(key).Key;
         }
-
+        // 19
         public Entry FloorEntry(K key)
         {
             if (root == null) throw new InvalidOperationException("Пусто");
@@ -406,12 +415,12 @@ class Program
             if (best == null) throw new InvalidOperationException("Нет ключа меньше или равного");
             return new Entry(best.Key, best.Value);
         }
-
+        // 23
         public K FloorKey(K key)
         {
             return FloorEntry(key).Key;
         }
-
+        // 29
         public Entry HigherEntry(K key)
         {
             if (root == null) throw new InvalidOperationException("Пусто");
@@ -427,12 +436,12 @@ class Program
 
             throw new InvalidOperationException("Нет большего ключа");
         }
-
+        //24
         public K HigherKey(K key)
         {
             return HigherEntry(key).Key;
         }
-
+        // 21
         public Entry CeilingEntry(K key)
         {
             if (root == null) throw new InvalidOperationException("Пусто");
@@ -448,12 +457,12 @@ class Program
 
             throw new InvalidOperationException("Нет ключа больше или равного");
         }
-
+        // 25
         public K CeilingKey(K key)
         {
             return CeilingEntry(key).Key;
         }
-
+        // 5
         public bool ContainsValue(V value)
         {
             if (root == null) return false;
@@ -468,7 +477,7 @@ class Program
 
             return false;
         }
-
+        // 9
         public List<K> KeySet()
         {
             List<Node> nodes = GetAllNodesInOrder();
@@ -479,7 +488,7 @@ class Program
 
             return result;
         }
-
+        //6
         public List<Entry> EntrySet()
         {
             List<Node> nodes = GetAllNodesInOrder();
@@ -490,7 +499,7 @@ class Program
 
             return result;
         }
-
+        // 15
         public MyTreeMap<K, V> HeadMap(K end)
         {
             if (object.Equals(end, null)) throw new ArgumentNullException("end");
@@ -511,7 +520,7 @@ class Program
 
             return result;
         }
-
+        // 17
         public MyTreeMap<K, V> TailMap(K start)
         {
             if (object.Equals(start, null)) throw new ArgumentNullException("start");
@@ -530,7 +539,7 @@ class Program
 
             return result;
         }
-
+        // 16
         public MyTreeMap<K, V> SubMap(K start, K end)
         {
             if (object.Equals(start, null)) throw new ArgumentNullException("start");
