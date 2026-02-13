@@ -23,8 +23,18 @@ class Program
 
         map.Put(12, "twelve");
         map.Put(18, "eighteen");
-        Console.WriteLine("Удаляем 15: " + (map.Remove(15) ?? "null"));
-        Console.WriteLine("Удаляем 5: " + (map.Remove(5) ?? "null"));
+        Console.WriteLine("FirstKey: " + map.FirstKey());
+        Console.WriteLine("LastKey: " + map.LastKey());
+
+        Console.WriteLine("FirstEntry: " + map.FirstEntry());
+        Console.WriteLine("LastEntry: " + map.LastEntry());
+
+        Console.WriteLine("PollFirstEntry: " + map.PollFirstEntry());
+        Console.WriteLine("Размер после pollFirst: " + map.Size());
+
+        Console.WriteLine("PollLastEntry: " + map.PollLastEntry());
+        Console.WriteLine("Размер после pollLast: " + map.Size());
+
         Console.WriteLine("Есть ли ключ 5? " + map.ContainsKey(5));
         Console.WriteLine("Размер после удаления: " + map.Size());
 
@@ -53,6 +63,23 @@ class Program
                 Left = null;
                 Right = null;
                 Parent = parent;
+            }
+        }
+
+        public class Entry
+        {
+            public K Key;
+            public V Value;
+
+            public Entry(K key, V value)
+            {
+                Key = key;
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return Key + "=" + Value;
             }
         }
 
@@ -244,6 +271,60 @@ class Program
             }
             size--;
             return removedValue;
+        }
+        private Node MaxNode(Node node)
+        {
+            Node current = node;
+            while(current.Right != null)
+            {
+                current = current.Right;
+            }
+            return current;
+        }
+
+        public K FirstKey()
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            return MinNode(root).Key;
+        }
+
+        public K LastKey()
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            return MaxNode(root).Key;
+        }
+
+        public Entry FirstEntry()
+        {
+            if(root == null) throw new InvalidOperationException("Пусто");
+            Node n = MinNode(root);
+            return new Entry(n.Key, n.Value);
+        }
+
+        public Entry LastEntry()
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            Node n = MaxNode(root);
+            return new Entry(n.Key, n.Value);
+        }
+
+        public Entry PollFirstEntry()
+        {
+            if(root == null) throw new InvalidOperationException("Пусто");
+            Node n = MinNode(root);
+            Entry e = new Entry(n.Key, n.Value);
+            Remove(n.Key);
+            return e;
+        }
+
+        public Entry PollLastEntry()
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+
+            Node n = MaxNode(root);
+            Entry e = new Entry(n.Key, n.Value);
+            Remove(n.Key);
+            return e;
         }
     }
 }
