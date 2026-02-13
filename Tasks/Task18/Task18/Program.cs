@@ -43,6 +43,13 @@ class Program
         Console.WriteLine("LowerEntry(12): " + map.LowerEntry(12));
         Console.WriteLine("CeilingEntry(11): " + map.CeilingEntry(11));
 
+        Console.WriteLine("ContainsValue(\"TEN\"): " + map.ContainsValue("TEN"));
+        Console.WriteLine("ContainsValue(\"nope\"): " + map.ContainsValue("nope"));
+
+        Console.WriteLine("KeySet: " + string.Join(", ", map.KeySet()));
+        Console.WriteLine("EntrySet: " + string.Join(", ", map.EntrySet()));
+
+
         map.Clear();
         Console.WriteLine("После clear size: " + map.Size());
        }
@@ -437,6 +444,43 @@ class Program
         public K CeilingKey(K key)
         {
             return CeilingEntry(key).Key;
+        }
+
+        public bool ContainsValue(V value)
+        {
+            if (root == null) return false;
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (object.Equals(nodes[i].Value, value))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public List<K> KeySet()
+        {
+            List<Node> nodes = GetAllNodesInOrder();
+            List<K> result = new List<K>();
+
+            for (int i = 0; i < nodes.Count; i++)
+                result.Add(nodes[i].Key);
+
+            return result;
+        }
+
+        public List<Entry> EntrySet()
+        {
+            List<Node> nodes = GetAllNodesInOrder();
+            List<Entry> result = new List<Entry>();
+
+            for (int i = 0; i < nodes.Count; i++)
+                result.Add(new Entry(nodes[i].Key, nodes[i].Value));
+
+            return result;
         }
 
     }
