@@ -35,8 +35,13 @@ class Program
         Console.WriteLine("PollLastEntry: " + map.PollLastEntry());
         Console.WriteLine("Размер после pollLast: " + map.Size());
 
-        Console.WriteLine("Есть ли ключ 5? " + map.ContainsKey(5));
-        Console.WriteLine("Размер после удаления: " + map.Size());
+        Console.WriteLine("LowerKey(12): " + map.LowerKey(12));
+        Console.WriteLine("FloorKey(12): " + map.FloorKey(12));
+        Console.WriteLine("HigherKey(12): " + map.HigherKey(12));   
+        Console.WriteLine("CeilingKey(11): " + map.CeilingKey(11)); 
+
+        Console.WriteLine("LowerEntry(12): " + map.LowerEntry(12));
+        Console.WriteLine("CeilingEntry(11): " + map.CeilingEntry(11));
 
         map.Clear();
         Console.WriteLine("После clear size: " + map.Size());
@@ -326,5 +331,113 @@ class Program
             Remove(n.Key);
             return e;
         }
+
+        private void TraverseInOrder(Node node, List<Node> list)
+        {
+            if (node == null) return;
+            TraverseInOrder(node.Left, list);
+            list.Add(node);
+            TraverseInOrder(node.Right, list);
+        }
+
+        private List<Node> GetAllNodesInOrder()
+        {
+            List<Node> list = new List<Node>();
+            TraverseInOrder(root, list);
+            return list;
+        }
+
+        public Entry LowerEntry(K key)
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            if (object.Equals(key, null)) throw new ArgumentNullException("key");
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            Node best = null;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) < 0)
+                    best = nodes[i];
+                else
+                    break;
+            }
+
+            if (best == null) throw new InvalidOperationException("Нет меньшего ключа");
+            return new Entry(best.Key, best.Value);
+        }
+
+        public K LowerKey(K key)
+        {
+            return LowerEntry(key).Key;
+        }
+
+        public Entry FloorEntry(K key)
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            if (object.Equals(key, null)) throw new ArgumentNullException("key");
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            Node best = null;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) <= 0)
+                    best = nodes[i];
+                else
+                    break;
+            }
+
+            if (best == null) throw new InvalidOperationException("Нет ключа меньше или равного");
+            return new Entry(best.Key, best.Value);
+        }
+
+        public K FloorKey(K key)
+        {
+            return FloorEntry(key).Key;
+        }
+
+        public Entry HigherEntry(K key)
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            if (object.Equals(key, null)) throw new ArgumentNullException("key");
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) > 0)
+                    return new Entry(nodes[i].Key, nodes[i].Value);
+            }
+
+            throw new InvalidOperationException("Нет большего ключа");
+        }
+
+        public K HigherKey(K key)
+        {
+            return HigherEntry(key).Key;
+        }
+
+        public Entry CeilingEntry(K key)
+        {
+            if (root == null) throw new InvalidOperationException("Пусто");
+            if (object.Equals(key, null)) throw new ArgumentNullException("key");
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) >= 0)
+                    return new Entry(nodes[i].Key, nodes[i].Value);
+            }
+
+            throw new InvalidOperationException("Нет ключа больше или равного");
+        }
+
+        public K CeilingKey(K key)
+        {
+            return CeilingEntry(key).Key;
+        }
+
     }
 }
