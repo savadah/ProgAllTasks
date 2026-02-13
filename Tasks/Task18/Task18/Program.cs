@@ -49,6 +49,14 @@ class Program
         Console.WriteLine("KeySet: " + string.Join(", ", map.KeySet()));
         Console.WriteLine("EntrySet: " + string.Join(", ", map.EntrySet()));
 
+        var head = map.HeadMap(12);
+        Console.WriteLine("HeadMap(<12): " + string.Join(", ", head.EntrySet()));
+
+        var tail = map.TailMap(12);
+        Console.WriteLine("TailMap(>=12): " + string.Join(", ", tail.EntrySet()));
+
+        var sub = map.SubMap(10, 15);
+        Console.WriteLine("SubMap([10..15)): " + string.Join(", ", sub.EntrySet()));
 
         map.Clear();
         Console.WriteLine("После clear size: " + map.Size());
@@ -479,6 +487,75 @@ class Program
 
             for (int i = 0; i < nodes.Count; i++)
                 result.Add(new Entry(nodes[i].Key, nodes[i].Value));
+
+            return result;
+        }
+
+        public MyTreeMap<K, V> HeadMap(K end)
+        {
+            if (object.Equals(end, null)) throw new ArgumentNullException("end");
+
+            MyTreeMap<K, V> result = (comparator == null)
+                ? new MyTreeMap<K, V>()
+                : new MyTreeMap<K, V>(comparator);
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, end) < 0)
+                    result.Put(nodes[i].Key, nodes[i].Value);
+                else
+                    break;
+            }
+
+            return result;
+        }
+
+        public MyTreeMap<K, V> TailMap(K start)
+        {
+            if (object.Equals(start, null)) throw new ArgumentNullException("start");
+
+            MyTreeMap<K, V> result = (comparator == null)
+                ? new MyTreeMap<K, V>()
+                : new MyTreeMap<K, V>(comparator);
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, start) >= 0)
+                    result.Put(nodes[i].Key, nodes[i].Value);
+            }
+
+            return result;
+        }
+
+        public MyTreeMap<K, V> SubMap(K start, K end)
+        {
+            if (object.Equals(start, null)) throw new ArgumentNullException("start");
+            if (object.Equals(end, null)) throw new ArgumentNullException("end");
+
+            if (CompareKeys(start, end) > 0)
+                throw new ArgumentException("start должен быть <= end");
+
+            MyTreeMap<K, V> result = (comparator == null)
+                ? new MyTreeMap<K, V>()
+                : new MyTreeMap<K, V>(comparator);
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, start) >= 0 && CompareKeys(nodes[i].Key, end) < 0)
+                {
+                    result.Put(nodes[i].Key, nodes[i].Value);
+                }
+                else if (CompareKeys(nodes[i].Key, end) >= 0)
+                {
+                    break;
+                }
+            }
 
             return result;
         }
