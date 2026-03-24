@@ -7,6 +7,33 @@ namespace Task19
     {
         static void Main(string[] args)
         {
+            MyTreeSet<int> set = new MyTreeSet<int>();
+
+            set.Add(10);
+            set.Add(5);
+            set.Add(15);
+            set.Add(12);
+            set.Add(18);
+
+            Console.WriteLine("Size: " + set.Size());
+            Console.WriteLine("First: " + set.First());
+            Console.WriteLine("Last: " + set.Last());
+            Console.WriteLine("Floor(11): " + set.Floor(11));
+            Console.WriteLine("Ceiling(11): " + set.Ceiling(11));
+            Console.WriteLine("Lower(12): " + set.Lower(12));
+            Console.WriteLine("Higher(12): " + set.Higher(12));
+
+            Console.WriteLine("PollFirst: " + set.PollFirst());
+            Console.WriteLine("PollLast: " + set.PollLast());
+
+            List<int> desc = set.DescendingIterator();
+
+            Console.Write("Descending: ");
+            for (int i = 0; i < desc.Count; i++)
+            {
+                Console.Write(desc[i] + " ");
+            }
+            Console.WriteLine();
         }
     }
 
@@ -1342,6 +1369,152 @@ namespace Task19
         {
             MyTreeMap<T, object> tailMap = m.TailMap(fromElement);
             return new MyTreeSet<T>(tailMap);
+        }
+
+        //23
+        public T Ceiling(T obj)
+        {
+            return m.CeilingKey(obj);
+        }
+
+        //24
+        public T Floor(T obj)
+        {
+            return m.FloorKey(obj);
+        }
+
+        //25
+        public T Higher(T obj)
+        {
+            return m.HigherKey(obj);
+        }
+
+        //26
+        public T Lower(T obj)
+        {
+            return m.LowerKey(obj);
+        }
+
+        //27
+        public MyTreeSet<T> HeadSet(T upperBound, bool incl)
+        {
+            List<T> keys = m.KeySet();
+            MyTreeSet<T> result = new MyTreeSet<T>();
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                int cmp = m.CompareKeys(keys[i], upperBound);
+
+                if (cmp < 0 || (incl && cmp == 0))
+                {
+                    result.Add(keys[i]);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        //28
+        public MyTreeSet<T> SubSet(T lowerBound, bool lowIncl, T upperBound, bool highIncl)
+        {
+            if (m.CompareKeys(lowerBound, upperBound) > 0)
+            {
+                throw new ArgumentException("lowerBound должен быть <= upperBound");
+            }
+
+            List<T> keys = m.KeySet();
+            MyTreeSet<T> result = new MyTreeSet<T>();
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                int cmpLow = m.CompareKeys(keys[i], lowerBound);
+                int cmpHigh = m.CompareKeys(keys[i], upperBound);
+
+                bool okLow = cmpLow > 0 || (lowIncl && cmpLow == 0);
+                bool okHigh = cmpHigh < 0 || (highIncl && cmpHigh == 0);
+
+                if (okLow && okHigh)
+                {
+                    result.Add(keys[i]);
+                }
+            }
+
+            return result;
+        }
+
+        //29
+        public MyTreeSet<T> TailSet(T fromElement, bool inclusive)
+        {
+            List<T> keys = m.KeySet();
+            MyTreeSet<T> result = new MyTreeSet<T>();
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                int cmp = m.CompareKeys(keys[i], fromElement);
+
+                if (cmp > 0 || (inclusive && cmp == 0))
+                {
+                    result.Add(keys[i]);
+                }
+            }
+
+            return result;
+        }
+
+        //30
+        public T PollLast()
+        {
+            if (m.IsEmpty())
+            {
+                return default(T);
+            }
+
+            MyTreeMap<T, object>.Entry entry = m.PollLastEntry();
+            return entry.Key;
+        }
+
+        //31
+        public T PollFirst()
+        {
+            if (m.IsEmpty())
+            {
+                return default(T);
+            }
+
+            MyTreeMap<T, object>.Entry entry = m.PollFirstEntry();
+            return entry.Key;
+        }
+
+        //32
+        public List<T> DescendingIterator()
+        {
+            List<T> keys = m.KeySet();
+            List<T> result = new List<T>();
+
+            for (int i = keys.Count - 1; i >= 0; i--)
+            {
+                result.Add(keys[i]);
+            }
+
+            return result;
+        }
+
+        //33
+        public MyTreeSet<T> DescendingSet()
+        {
+            List<T> keys = DescendingIterator();
+            MyTreeSet<T> result = new MyTreeSet<T>();
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                result.Add(keys[i]);
+            }
+
+            return result;
         }
     }
 }
