@@ -224,5 +224,124 @@ namespace Task19
             leftChild.Right = node;
             node.Parent = leftChild;
         }
+
+        //10
+        public void Put(K key, V value)
+        {
+            if (object.Equals(key, null))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            if (root == null)
+            {
+                root = new Node(key, value, null);
+                SetBlack(root);
+                size = 1;
+                return;
+            }
+
+            Node current = root;
+            Node parent = null;
+            int cmp = 0;
+
+            while (current != null)
+            {
+                parent = current;
+                cmp = CompareKeys(key, current.Key);
+
+                if (cmp < 0)
+                {
+                    current = current.Left;
+                }
+                else if (cmp > 0)
+                {
+                    current = current.Right;
+                }
+                else
+                {
+                    current.Value = value;
+                    return;
+                }
+            }
+
+            Node newNode = new Node(key, value, parent);
+
+            if (cmp < 0)
+            {
+                parent.Left = newNode;
+            }
+            else
+            {
+                parent.Right = newNode;
+            }
+
+            FixAfterInsertion(newNode);
+            size++;
+        }
+
+        private void FixAfterInsertion(Node node)
+        {
+            while (node != null && node != root && IsRedNode(ParentOf(node)))
+            {
+                Node parent = ParentOf(node);
+                Node grand = ParentOf(parent);
+
+                if (parent == LeftOf(grand))
+                {
+                    Node uncle = RightOf(grand);
+
+                    if (IsRedNode(uncle))
+                    {
+                        SetBlack(parent);
+                        SetBlack(uncle);
+                        SetRed(grand);
+                        node = grand;
+                    }
+                    else
+                    {
+                        if (node == RightOf(parent))
+                        {
+                            node = parent;
+                            RotateLeft(node);
+                            parent = ParentOf(node);
+                            grand = ParentOf(parent);
+                        }
+
+                        SetBlack(parent);
+                        SetRed(grand);
+                        RotateRight(grand);
+                    }
+                }
+                else
+                {
+                    Node uncle = LeftOf(grand);
+
+                    if (IsRedNode(uncle))
+                    {
+                        SetBlack(parent);
+                        SetBlack(uncle);
+                        SetRed(grand);
+                        node = grand;
+                    }
+                    else
+                    {
+                        if (node == LeftOf(parent))
+                        {
+                            node = parent;
+                            RotateRight(node);
+                            parent = ParentOf(node);
+                            grand = ParentOf(parent);
+                        }
+
+                        SetBlack(parent);
+                        SetRed(grand);
+                        RotateLeft(grand);
+                    }
+                }
+            }
+
+            SetBlack(root);
+        }
     }
 }
