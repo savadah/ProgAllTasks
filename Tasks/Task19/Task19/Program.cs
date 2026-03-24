@@ -1041,4 +1041,154 @@ namespace Task19
             return result;
         }
     }
+
+    public class MyTreeSet<T>
+    {
+        private MyTreeMap<T, object> m;
+        private static readonly object PRESENT = new object();
+
+        //1
+        public MyTreeSet()
+        {
+            m = new MyTreeMap<T, object>();
+        }
+
+        //2
+        public MyTreeSet(MyTreeMap<T, object> map)
+        {
+            if (map == null)
+            {
+                throw new ArgumentNullException("map");
+            }
+
+            m = map;
+        }
+
+        //3
+        public MyTreeSet(IComparer<T> comparator)
+        {
+            if (comparator == null)
+            {
+                throw new ArgumentNullException("comparator");
+            }
+
+            m = new MyTreeMap<T, object>(comparator);
+        }
+
+        //4
+        public MyTreeSet(T[] a)
+        {
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
+
+            m = new MyTreeMap<T, object>();
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                Add(a[i]);
+            }
+        }
+
+        //5
+        public MyTreeSet(SortedSet<T> s)
+        {
+            if (s == null)
+            {
+                throw new ArgumentNullException("s");
+            }
+
+            m = new MyTreeMap<T, object>(s.Comparer);
+
+            foreach (T item in s)
+            {
+                Add(item);
+            }
+        }
+
+        //6
+        public bool Add(T e)
+        {
+            bool had = m.ContainsKey(e);
+
+            if (had)
+            {
+                return false;
+            }
+
+            m.Put(e, PRESENT);
+            return true;
+        }
+
+        //8
+        public void Clear()
+        {
+            m.Clear();
+        }
+
+        //9
+        public bool Contains(object o)
+        {
+            if (o == null)
+            {
+                return false;
+            }
+
+            if (!(o is T))
+            {
+                return false;
+            }
+
+            return m.ContainsKey((T)o);
+        }
+
+        //11
+        public bool IsEmpty()
+        {
+            return m.IsEmpty();
+        }
+
+        //12
+        public bool Remove(object o)
+        {
+            if (o == null)
+            {
+                return false;
+            }
+
+            if (!(o is T))
+            {
+                return false;
+            }
+
+            T value = (T)o;
+
+            if (!m.ContainsKey(value))
+            {
+                return false;
+            }
+
+            m.Remove(value);
+            return true;
+        }
+
+        //15
+        public int Size()
+        {
+            return m.Size();
+        }
+
+        //18
+        public T First()
+        {
+            return m.FirstKey();
+        }
+
+        //19
+        public T Last()
+        {
+            return m.LastKey();
+        }
+    }
 }
