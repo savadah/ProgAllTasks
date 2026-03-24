@@ -1121,6 +1121,27 @@ namespace Task19
             return true;
         }
 
+        //7
+        public bool AddAll(T[] a)
+        {
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
+
+            bool changed = false;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (Add(a[i]))
+                {
+                    changed = true;
+                }
+            }
+
+            return changed;
+        }
+
         //8
         public void Clear()
         {
@@ -1141,6 +1162,25 @@ namespace Task19
             }
 
             return m.ContainsKey((T)o);
+        }
+
+        //10
+        public bool ContainsAll(T[] a)
+        {
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (!Contains(a[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         //11
@@ -1173,10 +1213,102 @@ namespace Task19
             return true;
         }
 
+        //13
+        public bool RemoveAll(T[] a)
+        {
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
+
+            bool changed = false;
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (Remove(a[i]))
+                {
+                    changed = true;
+                }
+            }
+
+            return changed;
+        }
+
+        //14
+        public bool RetainAll(T[] a)
+        {
+            if (a == null)
+            {
+                throw new ArgumentNullException("a");
+            }
+
+            List<T> current = m.KeySet();
+            bool changed = false;
+
+            for (int i = 0; i < current.Count; i++)
+            {
+                bool found = false;
+
+                for (int j = 0; j < a.Length; j++)
+                {
+                    if (object.Equals(current[i], a[j]))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Remove(current[i]);
+                    changed = true;
+                }
+            }
+
+            return changed;
+        }
+
         //15
         public int Size()
         {
             return m.Size();
+        }
+
+        //16
+        public object[] ToArray()
+        {
+            List<T> keys = m.KeySet();
+            object[] result = new object[keys.Count];
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                result[i] = keys[i];
+            }
+
+            return result;
+        }
+
+        //17
+        public T[] ToArray(T[] a)
+        {
+            List<T> keys = m.KeySet();
+            T[] result;
+
+            if (a == null || a.Length < keys.Count)
+            {
+                result = new T[keys.Count];
+            }
+            else
+            {
+                result = a;
+            }
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                result[i] = keys[i];
+            }
+
+            return result;
         }
 
         //18
@@ -1189,6 +1321,27 @@ namespace Task19
         public T Last()
         {
             return m.LastKey();
+        }
+
+        //20
+        public MyTreeSet<T> SubSet(T fromElement, T toElement)
+        {
+            MyTreeMap<T, object> subMap = m.SubMap(fromElement, toElement);
+            return new MyTreeSet<T>(subMap);
+        }
+
+        //21
+        public MyTreeSet<T> HeadSet(T toElement)
+        {
+            MyTreeMap<T, object> headMap = m.HeadMap(toElement);
+            return new MyTreeSet<T>(headMap);
+        }
+
+        //22
+        public MyTreeSet<T> TailSet(T fromElement)
+        {
+            MyTreeMap<T, object> tailMap = m.TailMap(fromElement);
+            return new MyTreeSet<T>(tailMap);
         }
     }
 }
