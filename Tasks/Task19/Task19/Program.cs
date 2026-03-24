@@ -83,5 +83,146 @@ namespace Task19
 
             throw new InvalidOperationException("Тип ключа не поддерживает сравнение");
         }
+
+        private bool IsRedNode(Node node)
+        {
+            if (node == null)
+            {
+                return false;
+            }
+
+            return node.IsRed;
+        }
+
+        private bool IsBlackNode(Node node)
+        {
+            return !IsRedNode(node);
+        }
+
+        private void SetRed(Node node)
+        {
+            if (node != null)
+            {
+                node.IsRed = true;
+            }
+        }
+
+        private void SetBlack(Node node)
+        {
+            if (node != null)
+            {
+                node.IsRed = false;
+            }
+        }
+
+        private Node ParentOf(Node node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            return node.Parent;
+        }
+
+        private Node LeftOf(Node node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            return node.Left;
+        }
+
+        private Node RightOf(Node node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            return node.Right;
+        }
+
+        private void RotateLeft(Node node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            Node rightChild = node.Right;
+
+            if (rightChild == null)
+            {
+                return;
+            }
+
+            node.Right = rightChild.Left;
+
+            if (rightChild.Left != null)
+            {
+                rightChild.Left.Parent = node;
+            }
+
+            rightChild.Parent = node.Parent;
+
+            if (node.Parent == null)
+            {
+                root = rightChild;
+            }
+            else if (node == node.Parent.Left)
+            {
+                node.Parent.Left = rightChild;
+            }
+            else
+            {
+                node.Parent.Right = rightChild;
+            }
+
+            rightChild.Left = node;
+            node.Parent = rightChild;
+        }
+
+        private void RotateRight(Node node)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            Node leftChild = node.Left;
+
+            if (leftChild == null)
+            {
+                return;
+            }
+
+            node.Left = leftChild.Right;
+
+            if (leftChild.Right != null)
+            {
+                leftChild.Right.Parent = node;
+            }
+
+            leftChild.Parent = node.Parent;
+
+            if (node.Parent == null)
+            {
+                root = leftChild;
+            }
+            else if (node == node.Parent.Right)
+            {
+                node.Parent.Right = leftChild;
+            }
+            else
+            {
+                node.Parent.Left = leftChild;
+            }
+
+            leftChild.Right = node;
+            node.Parent = leftChild;
+        }
     }
 }
