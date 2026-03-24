@@ -36,6 +36,23 @@ namespace Task19
             }
         }
 
+        public class Entry
+        {
+            public K Key;
+            public V Value;
+
+            public Entry(K key, V value)
+            {
+                Key = key;
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return Key + "=" + Value;
+            }
+        }
+
         //1
         public MyTreeMap()
         {
@@ -525,6 +542,25 @@ namespace Task19
             SetBlack(node);
         }
 
+        private void TraverseInOrder(Node node, List<Node> list)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            TraverseInOrder(node.Left, list);
+            list.Add(node);
+            TraverseInOrder(node.Right, list);
+        }
+
+        private List<Node> GetAllNodesInOrder()
+        {
+            List<Node> list = new List<Node>();
+            TraverseInOrder(root, list);
+            return list;
+        }
+
         //11
         public V Remove(K key)
         {
@@ -645,6 +681,364 @@ namespace Task19
             }
 
             return MaxNode(root).Key;
+        }
+
+        //28
+        public Entry FirstEntry()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            Node node = MinNode(root);
+            return new Entry(node.Key, node.Value);
+        }
+
+        //29
+        public Entry LastEntry()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            Node node = MaxNode(root);
+            return new Entry(node.Key, node.Value);
+        }
+
+        //26
+        public Entry PollFirstEntry()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            Node node = MinNode(root);
+            Entry result = new Entry(node.Key, node.Value);
+            Remove(node.Key);
+            return result;
+        }
+
+        //27
+        public Entry PollLastEntry()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            Node node = MaxNode(root);
+            Entry result = new Entry(node.Key, node.Value);
+            Remove(node.Key);
+            return result;
+        }
+
+        //18
+        public Entry LowerEntry(K key)
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            if (object.Equals(key, null))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+            Node best = null;
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) < 0)
+                {
+                    best = nodes[i];
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (best == null)
+            {
+                throw new InvalidOperationException("Нет меньшего ключа");
+            }
+
+            return new Entry(best.Key, best.Value);
+        }
+
+        //22
+        public K LowerKey(K key)
+        {
+            return LowerEntry(key).Key;
+        }
+
+        //19
+        public Entry FloorEntry(K key)
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            if (object.Equals(key, null))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+            Node best = null;
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) <= 0)
+                {
+                    best = nodes[i];
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (best == null)
+            {
+                throw new InvalidOperationException("Нет ключа меньше или равного");
+            }
+
+            return new Entry(best.Key, best.Value);
+        }
+
+        //23
+        public K FloorKey(K key)
+        {
+            return FloorEntry(key).Key;
+        }
+
+        //20
+        public Entry HigherEntry(K key)
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            if (object.Equals(key, null))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) > 0)
+                {
+                    return new Entry(nodes[i].Key, nodes[i].Value);
+                }
+            }
+
+            throw new InvalidOperationException("Нет большего ключа");
+        }
+
+        //24
+        public K HigherKey(K key)
+        {
+            return HigherEntry(key).Key;
+        }
+
+        //21
+        public Entry CeilingEntry(K key)
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            if (object.Equals(key, null))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, key) >= 0)
+                {
+                    return new Entry(nodes[i].Key, nodes[i].Value);
+                }
+            }
+
+            throw new InvalidOperationException("Нет ключа больше или равного");
+        }
+
+        //25
+        public K CeilingKey(K key)
+        {
+            return CeilingEntry(key).Key;
+        }
+
+        //5
+        public bool ContainsValue(V value)
+        {
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (object.Equals(nodes[i].Value, value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        //9
+        public List<K> KeySet()
+        {
+            List<Node> nodes = GetAllNodesInOrder();
+            List<K> result = new List<K>();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                result.Add(nodes[i].Key);
+            }
+
+            return result;
+        }
+
+        //6
+        public List<Entry> EntrySet()
+        {
+            List<Node> nodes = GetAllNodesInOrder();
+            List<Entry> result = new List<Entry>();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                result.Add(new Entry(nodes[i].Key, nodes[i].Value));
+            }
+
+            return result;
+        }
+
+        //15
+        public MyTreeMap<K, V> HeadMap(K end)
+        {
+            if (object.Equals(end, null))
+            {
+                throw new ArgumentNullException("end");
+            }
+
+            MyTreeMap<K, V> result;
+
+            if (comparator == null)
+            {
+                result = new MyTreeMap<K, V>();
+            }
+            else
+            {
+                result = new MyTreeMap<K, V>(comparator);
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, end) < 0)
+                {
+                    result.Put(nodes[i].Key, nodes[i].Value);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        //17
+        public MyTreeMap<K, V> TailMap(K start)
+        {
+            if (object.Equals(start, null))
+            {
+                throw new ArgumentNullException("start");
+            }
+
+            MyTreeMap<K, V> result;
+
+            if (comparator == null)
+            {
+                result = new MyTreeMap<K, V>();
+            }
+            else
+            {
+                result = new MyTreeMap<K, V>(comparator);
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, start) >= 0)
+                {
+                    result.Put(nodes[i].Key, nodes[i].Value);
+                }
+            }
+
+            return result;
+        }
+
+        //16
+        public MyTreeMap<K, V> SubMap(K start, K end)
+        {
+            if (object.Equals(start, null))
+            {
+                throw new ArgumentNullException("start");
+            }
+
+            if (object.Equals(end, null))
+            {
+                throw new ArgumentNullException("end");
+            }
+
+            if (CompareKeys(start, end) > 0)
+            {
+                throw new ArgumentException("start должен быть <= end");
+            }
+
+            MyTreeMap<K, V> result;
+
+            if (comparator == null)
+            {
+                result = new MyTreeMap<K, V>();
+            }
+            else
+            {
+                result = new MyTreeMap<K, V>(comparator);
+            }
+
+            List<Node> nodes = GetAllNodesInOrder();
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (CompareKeys(nodes[i].Key, start) >= 0 && CompareKeys(nodes[i].Key, end) < 0)
+                {
+                    result.Put(nodes[i].Key, nodes[i].Value);
+                }
+                else if (CompareKeys(nodes[i].Key, end) >= 0)
+                {
+                    break;
+                }
+            }
+
+            return result;
         }
     }
 }
