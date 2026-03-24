@@ -409,6 +409,184 @@ namespace Task19
             return current;
         }
 
+        private void Transplant(Node u, Node v)
+        {
+            if (u.Parent == null)
+            {
+                root = v;
+            }
+            else if (u == u.Parent.Left)
+            {
+                u.Parent.Left = v;
+            }
+            else
+            {
+                u.Parent.Right = v;
+            }
+
+            if (v != null)
+            {
+                v.Parent = u.Parent;
+            }
+        }
+
+        private void FixAfterDeletion(Node node, Node parent)
+        {
+            while (node != root && IsBlackNode(node))
+            {
+                if (node == LeftOf(parent))
+                {
+                    Node brother = RightOf(parent);
+
+                    if (IsRedNode(brother))
+                    {
+                        SetBlack(brother);
+                        SetRed(parent);
+                        RotateLeft(parent);
+                        brother = RightOf(parent);
+                    }
+
+                    if (IsBlackNode(LeftOf(brother)) && IsBlackNode(RightOf(brother)))
+                    {
+                        SetRed(brother);
+                        node = parent;
+                        parent = ParentOf(node);
+                    }
+                    else
+                    {
+                        if (IsBlackNode(RightOf(brother)))
+                        {
+                            SetBlack(LeftOf(brother));
+                            SetRed(brother);
+                            RotateRight(brother);
+                            brother = RightOf(parent);
+                        }
+
+                        if (IsRedNode(parent))
+                        {
+                            SetRed(brother);
+                        }
+                        else
+                        {
+                            SetBlack(brother);
+                        }
+
+                        SetBlack(parent);
+                        SetBlack(RightOf(brother));
+                        RotateLeft(parent);
+                        node = root;
+                    }
+                }
+                else
+                {
+                    Node brother = LeftOf(parent);
+
+                    if (IsRedNode(brother))
+                    {
+                        SetBlack(brother);
+                        SetRed(parent);
+                        RotateRight(parent);
+                        brother = LeftOf(parent);
+                    }
+
+                    if (IsBlackNode(LeftOf(brother)) && IsBlackNode(RightOf(brother)))
+                    {
+                        SetRed(brother);
+                        node = parent;
+                        parent = ParentOf(node);
+                    }
+                    else
+                    {
+                        if (IsBlackNode(LeftOf(brother)))
+                        {
+                            SetBlack(RightOf(brother));
+                            SetRed(brother);
+                            RotateLeft(brother);
+                            brother = LeftOf(parent);
+                        }
+
+                        if (IsRedNode(parent))
+                        {
+                            SetRed(brother);
+                        }
+                        else
+                        {
+                            SetBlack(brother);
+                        }
+
+                        SetBlack(parent);
+                        SetBlack(LeftOf(brother));
+                        RotateRight(parent);
+                        node = root;
+                    }
+                }
+            }
+
+            SetBlack(node);
+        }
+
+        //11
+        public V Remove(K key)
+        {
+            Node z = FindNode(key);
+
+            if (z == null)
+            {
+                return default(V);
+            }
+
+            V removedValue = z.Value;
+            Node y = z;
+            bool yWasRed = y.IsRed;
+            Node x;
+            Node xParent;
+
+            if (z.Left == null)
+            {
+                x = z.Right;
+                xParent = z.Parent;
+                Transplant(z, z.Right);
+            }
+            else if (z.Right == null)
+            {
+                x = z.Left;
+                xParent = z.Parent;
+                Transplant(z, z.Left);
+            }
+            else
+            {
+                y = MinNode(z.Right);
+                yWasRed = y.IsRed;
+                x = y.Right;
+
+                if (y.Parent == z)
+                {
+                    xParent = y;
+                }
+                else
+                {
+                    xParent = y.Parent;
+                    Transplant(y, y.Right);
+                    y.Right = z.Right;
+                    y.Right.Parent = y;
+                }
+
+                Transplant(z, y);
+                y.Left = z.Left;
+                y.Left.Parent = y;
+                y.IsRed = z.IsRed;
+            }
+
+            size--;
+
+            if (!yWasRed)
+            {
+                FixAfterDeletion(x, xParent);
+            }
+
+            return removedValue;
+        }
+
         //12
         public int Size()
         {
