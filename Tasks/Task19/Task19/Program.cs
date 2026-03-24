@@ -101,6 +101,7 @@ namespace Task19
             comparator = comp;
         }
 
+        // Сравнение ключей через comparator или естественный порядок
         public int CompareKeys(K a, K b)
         {
             if (object.Equals(a, null))
@@ -128,6 +129,7 @@ namespace Task19
             throw new InvalidOperationException("Тип ключа не поддерживает сравнение");
         }
 
+        // Проверка, является ли узел красным
         private bool IsRedNode(Node node)
         {
             if (node == null)
@@ -138,11 +140,13 @@ namespace Task19
             return node.IsRed;
         }
 
+        // Проверка, является ли узел чёрным
         private bool IsBlackNode(Node node)
         {
             return !IsRedNode(node);
         }
 
+        // Покрасить узел в красный
         private void SetRed(Node node)
         {
             if (node != null)
@@ -151,6 +155,7 @@ namespace Task19
             }
         }
 
+        // Покрасить узел в чёрный
         private void SetBlack(Node node)
         {
             if (node != null)
@@ -159,6 +164,7 @@ namespace Task19
             }
         }
 
+        // Получить родителя узла
         private Node ParentOf(Node node)
         {
             if (node == null)
@@ -169,6 +175,7 @@ namespace Task19
             return node.Parent;
         }
 
+        // Получить левого потомка узла
         private Node LeftOf(Node node)
         {
             if (node == null)
@@ -179,6 +186,7 @@ namespace Task19
             return node.Left;
         }
 
+        // Получить правого потомка узла
         private Node RightOf(Node node)
         {
             if (node == null)
@@ -189,6 +197,7 @@ namespace Task19
             return node.Right;
         }
 
+        // Левый поворот вокруг узла
         private void RotateLeft(Node node)
         {
             if (node == null)
@@ -229,6 +238,7 @@ namespace Task19
             node.Parent = rightChild;
         }
 
+        // Правый поворот вокруг узла
         private void RotateRight(Node node)
         {
             if (node == null)
@@ -324,6 +334,7 @@ namespace Task19
             size++;
         }
 
+        // Восстановление свойств дерева после вставки
         private void FixAfterInsertion(Node node)
         {
             while (node != null && node != root && IsRedNode(ParentOf(node)))
@@ -388,6 +399,7 @@ namespace Task19
             SetBlack(root);
         }
 
+        // Поиск узла по ключу
         private Node FindNode(K key)
         {
             if (object.Equals(key, null))
@@ -419,6 +431,7 @@ namespace Task19
             return null;
         }
 
+        // Поиск минимального узла в поддереве
         private Node MinNode(Node node)
         {
             if (node == null)
@@ -436,6 +449,7 @@ namespace Task19
             return current;
         }
 
+        // Поиск максимального узла в поддереве
         private Node MaxNode(Node node)
         {
             if (node == null)
@@ -453,6 +467,7 @@ namespace Task19
             return current;
         }
 
+        // Замена одного поддерева другим
         private void Transplant(Node u, Node v)
         {
             if (u.Parent == null)
@@ -474,6 +489,7 @@ namespace Task19
             }
         }
 
+        // Восстановление свойств дерева после удаления
         private void FixAfterDeletion(Node node, Node parent)
         {
             while (node != root && IsBlackNode(node))
@@ -569,6 +585,7 @@ namespace Task19
             SetBlack(node);
         }
 
+        // Симметричный обход дерева по возрастанию ключей
         private void TraverseInOrder(Node node, List<Node> list)
         {
             if (node == null)
@@ -581,6 +598,7 @@ namespace Task19
             TraverseInOrder(node.Right, list);
         }
 
+        // Получить все узлы дерева в отсортированном порядке
         private List<Node> GetAllNodesInOrder()
         {
             List<Node> list = new List<Node>();
@@ -1489,6 +1507,7 @@ namespace Task19
             return entry.Key;
         }
 
+        // Обратный обход множества
         //32
         public List<T> DescendingIterator()
         {
@@ -1503,6 +1522,7 @@ namespace Task19
             return result;
         }
 
+        // Построение множества на основе обратного обхода
         //33
         public MyTreeSet<T> DescendingSet()
         {
