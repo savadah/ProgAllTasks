@@ -343,5 +343,130 @@ namespace Task19
 
             SetBlack(root);
         }
+
+        private Node FindNode(K key)
+        {
+            if (object.Equals(key, null))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            Node current = root;
+
+            while (current != null)
+            {
+                int cmp = CompareKeys(key, current.Key);
+
+                if (cmp == 0)
+                {
+                    return current;
+                }
+
+                if (cmp < 0)
+                {
+                    current = current.Left;
+                }
+                else
+                {
+                    current = current.Right;
+                }
+            }
+
+            return null;
+        }
+
+        private Node MinNode(Node node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            Node current = node;
+
+            while (current.Left != null)
+            {
+                current = current.Left;
+            }
+
+            return current;
+        }
+
+        private Node MaxNode(Node node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            Node current = node;
+
+            while (current.Right != null)
+            {
+                current = current.Right;
+            }
+
+            return current;
+        }
+
+        //12
+        public int Size()
+        {
+            return size;
+        }
+
+        //8
+        public bool IsEmpty()
+        {
+            return size == 0;
+        }
+
+        //3
+        public void Clear()
+        {
+            root = null;
+            size = 0;
+        }
+
+        //4
+        public bool ContainsKey(K key)
+        {
+            return FindNode(key) != null;
+        }
+
+        //7
+        public V Get(K key)
+        {
+            Node node = FindNode(key);
+
+            if (node == null)
+            {
+                return default(V);
+            }
+
+            return node.Value;
+        }
+
+        //13
+        public K FirstKey()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            return MinNode(root).Key;
+        }
+
+        //14
+        public K LastKey()
+        {
+            if (root == null)
+            {
+                throw new InvalidOperationException("Пусто");
+            }
+
+            return MaxNode(root).Key;
+        }
     }
 }
