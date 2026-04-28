@@ -24,6 +24,13 @@ class Program
     static int[] parE;
     static int nNet;
 
+    static List<int>[] cutGraph;
+    static bool[] used;
+    static int[] tin;
+    static int[] low;
+    static bool[] cut;
+    static int timer;
+
     static void Main(string[] args)
     {
         Task1();
@@ -239,5 +246,111 @@ class Program
     static void Task16()
     {
         Console.WriteLine("16. Поиск шарниров в графе");
+
+        int n = 5;
+
+        cutGraph = new List<int>[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            cutGraph[i] = new List<int>();
+        }
+
+        AddUndirected(0, 1);
+        AddUndirected(1, 2);
+        AddUndirected(1, 3);
+        AddUndirected(3, 4);
+
+        used = new bool[n];
+        tin = new int[n];
+        low = new int[n];
+        cut = new bool[n];
+        timer = 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (used[i] == false)
+            {
+                DfsCut(i, -1);
+            }
+        }
+
+        Console.WriteLine("Шарниры графа:");
+
+        bool found = false;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (cut[i] == true)
+            {
+                Console.Write((i + 1) + " ");
+                found = true;
+            }
+        }
+
+        if (found == false)
+        {
+            Console.WriteLine("Шарниров нет");
+        }
+        else
+        {
+            Console.WriteLine();
+        }
+    }
+
+    static void AddUndirected(int a, int b)
+    {
+        cutGraph[a].Add(b);
+        cutGraph[b].Add(a);
+    }
+
+    static void DfsCut(int v, int parent)
+    {
+        used[v] = true;
+
+        tin[v] = timer;
+        low[v] = timer;
+        timer++;
+
+        int children = 0;
+
+        for (int i = 0; i < cutGraph[v].Count; i++)
+        {
+            int to = cutGraph[v][i];
+
+            if (to == parent)
+            {
+                continue;
+            }
+
+            if (used[to] == true)
+            {
+                if (tin[to] < low[v])
+                {
+                    low[v] = tin[to];
+                }
+            }
+            else
+            {
+                DfsCut(to, v);
+
+                if (low[to] < low[v])
+                {
+                    low[v] = low[to];
+                }
+
+                if (low[to] >= tin[v] && parent != -1)
+                {
+                    cut[v] = true;
+                }
+
+                children++;
+            }
+        }
+
+        if (parent == -1 && children > 1)
+        {
+            cut[v] = true;
+        }
     }
 }
