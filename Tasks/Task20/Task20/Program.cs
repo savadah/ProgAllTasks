@@ -20,6 +20,8 @@ class Program
     }
 
     static List<Edge>[] net;
+    static int[] parV;
+    static int[] parE;
     static int nNet;
 
     static void Main(string[] args)
@@ -113,6 +115,9 @@ class Program
 
         nNet = 4;
 
+        int s = 0;
+        int t = 3;
+
         net = new List<Edge>[nNet];
 
         for (int i = 0; i < nNet; i++)
@@ -126,20 +131,13 @@ class Program
         AddEdge(1, 3, 2);
         AddEdge(2, 3, 4);
 
-        Console.WriteLine("Транспортная сеть:");
+        parV = new int[nNet];
+        parE = new int[nNet];
 
-        for (int i = 0; i < nNet; i++)
-        {
-            for (int j = 0; j < net[i].Count; j++)
-            {
-                Edge e = net[i][j];
+        int answer = MaxFlow(s, t);
 
-                if (e.Capacity > 0)
-                {
-                    Console.WriteLine((i + 1) + " -> " + (e.To + 1) + ", пропускная способность = " + e.Capacity);
-                }
-            }
-        }
+        Console.WriteLine("Максимальный поток:");
+        Console.WriteLine(answer);
     }
 
     static void AddEdge(int from, int to, int capacity)
@@ -149,6 +147,93 @@ class Program
 
         net[from].Add(direct);
         net[to].Add(back);
+    }
+
+    static bool Bfs(int s, int t)
+    {
+        for (int i = 0; i < nNet; i++)
+        {
+            parV[i] = -1;
+            parE[i] = -1;
+        }
+
+        Queue<int> q = new Queue<int>();
+
+        q.Enqueue(s);
+        parV[s] = s;
+
+        while (q.Count > 0)
+        {
+            int v = q.Dequeue();
+
+            for (int i = 0; i < net[v].Count; i++)
+            {
+                Edge e = net[v][i];
+
+                if (parV[e.To] == -1 && e.Capacity - e.Flow > 0)
+                {
+                    parV[e.To] = v;
+                    parE[e.To] = i;
+
+                    q.Enqueue(e.To);
+
+                    if (e.To == t)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    static int MaxFlow(int s, int t)
+    {
+        int answer = 0;
+
+        while (Bfs(s, t) == true)
+        {
+            int add = int.MaxValue;
+
+            int cur = t;
+
+            while (cur != s)
+            {
+                int prev = parV[cur];
+                int edgeIndex = parE[cur];
+
+                Edge e = net[prev][edgeIndex];
+
+                int free = e.Capacity - e.Flow;
+
+                if (free < add)
+                {
+                    add = free;
+                }
+
+                cur = prev;
+            }
+
+            cur = t;
+
+            while (cur != s)
+            {
+                int prev = parV[cur];
+                int edgeIndex = parE[cur];
+
+                Edge e = net[prev][edgeIndex];
+
+                e.Flow += add;
+                net[cur][e.Reverse].Flow -= add;
+
+                cur = prev;
+            }
+
+            answer += add;
+        }
+
+        return answer;
     }
 
     static void Task16()
