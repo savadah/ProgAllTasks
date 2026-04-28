@@ -46,6 +46,7 @@ class Program
         Console.ReadLine();
     }
 
+    // Задача 1: построение транзитивного замыкания ориентированного графа
     static void Task1()
     {
         Console.WriteLine("1. Построение транзитивного замыкания с помощью DFS");
@@ -100,6 +101,7 @@ class Program
         }
     }
 
+    // DFS отмечает все вершины, достижимые из стартовой вершины
     static void DfsClose(int start, int v, List<int>[] graph, bool[] mark, bool[,] close)
     {
         mark[v] = true;
@@ -116,6 +118,7 @@ class Program
         }
     }
 
+    // Задача 10: построение максимального потока алгоритмом Эдмондса-Карпа
     static void Task10()
     {
         Console.WriteLine("10. Построение максимального потока. Алгоритм Эдмондса-Карпа");
@@ -147,6 +150,7 @@ class Program
         Console.WriteLine(answer);
     }
 
+    // Добавление прямого и обратного ребра в транспортную сеть
     static void AddEdge(int from, int to, int capacity)
     {
         Edge direct = new Edge(to, net[to].Count, capacity);
@@ -156,6 +160,7 @@ class Program
         net[to].Add(back);
     }
 
+    // BFS ищет добавочный путь от истока к стоку в остаточной сети
     static bool Bfs(int s, int t)
     {
         for (int i = 0; i < nNet; i++)
@@ -195,6 +200,7 @@ class Program
         return false;
     }
 
+    // Основная часть алгоритма Эдмондса-Карпа
     static int MaxFlow(int s, int t)
     {
         int answer = 0;
@@ -243,6 +249,7 @@ class Program
         return answer;
     }
 
+    // Задача 16: поиск шарниров в неориентированном графе
     static void Task16()
     {
         Console.WriteLine("16. Поиск шарниров в графе");
@@ -298,12 +305,14 @@ class Program
         }
     }
 
+    // Добавление ребра в неориентированный граф
     static void AddUndirected(int a, int b)
     {
         cutGraph[a].Add(b);
         cutGraph[b].Add(a);
     }
 
+    // DFS для поиска шарниров с помощью tin и low
     static void DfsCut(int v, int parent)
     {
         used[v] = true;
